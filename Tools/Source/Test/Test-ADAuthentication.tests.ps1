@@ -19,6 +19,7 @@ Describe "Testing Test-ADAuthentication Success" {
 
         Mock New-Object { Return $FakeResult }
         Mock Get-ADUser { Return $FakeUser }
+        Mock Get-ADDomain { Return @{distinguishedName = "FakeDomain"} }
         
         It "Test successfully finding a user" {
             (Test-ADAuthentication -User $FakeCredential).ValidPassword | Should be $true
