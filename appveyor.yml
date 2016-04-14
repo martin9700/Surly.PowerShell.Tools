@@ -10,7 +10,6 @@ install:
 build_script:
   - ps: Write-Host $Env:APPVEYOR_BUILD_FOLDER
   - ps: Add-WindowsFeature RSAT-AD-PowerShell
-  - ps: Import-Module ActiveDirectory -ErrorAction SilentlyContinue
 
 test_script:
   - ps: Set-Location -Path $Env:APPVEYOR_BUILD_FOLDER

@@ -1,4 +1,5 @@
 ﻿. $PSScriptRoot\..\Public\Test-ADAuthentication.ps1
+Import-Module ActiveDirectory -ErrorAction SilentlyContinue
 
 Describe "Testing Test-ADAuthentication Success" {
     $FakePassword = ConvertTo-SecureString "FakePassword" -AsPlainText -Force
