@@ -1,5 +1,5 @@
 ﻿. $PSScriptRoot\..\Public\Test-ADAuthentication.ps1
-Import-Module ActiveDirectory -ErrorAction SilentlyContinue
+#Import-Module ActiveDirectory -ErrorAction SilentlyContinue
 
 Describe "Testing Test-ADAuthentication Success" {
     $FakePassword = ConvertTo-SecureString "FakePassword" -AsPlainText -Force
@@ -19,7 +19,7 @@ Describe "Testing Test-ADAuthentication Success" {
 
         Mock New-Object { Return $FakeResult }
         Mock Get-ADUser { Return $FakeUser }
-        Mock Get-ADDomain { Return @{distinguishedName = "FakeDomain"} }
+        Mock Get-ADDomain { Return [PSCustomObject]@{distinguishedName = "FakeDomain"} }
         
         It "Test successfully finding a user" {
             (Test-ADAuthentication -User $FakeCredential).ValidPassword | Should be $true
