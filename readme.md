@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/ct5lobsct2dvm8px?svg=true)](https://ci.appveyor.com/project/MartinPugh/ps-surly-tools)
+
 #PS Surly Tools
 Over the years I've written a LOT of scripts.  A LOT.  I thought it would be nice to publish some of the better ones--so many of my scripts are one off's that I can only publish a fraction of them--and put them all in one easy location.  Here they are.
 
