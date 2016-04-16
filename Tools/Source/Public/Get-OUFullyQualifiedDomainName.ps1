@@ -25,47 +25,48 @@
 		Will present a listing of all of your OU's that have the word "computers" in them.
 	.OUTPUT
 		FQDN of the selected OU into the Windows clipboard
+    .NOTES
+        Author:             Martin Pugh
+        Twitter:            @thesurlyadm1n
+        Spiceworks:         Martin9700
+        Blog:               www.thesurlyadmin.com
+      
+        Changelog:
+            2.0             Complete rewrite.  Using Out-Gridview now
+            1.0             Initial Release
+
 	.LINK
 		http://technet.microsoft.com/en-us/library/ee692764.aspx
 		
 	#>
+    [CmdletBinding()]
 	Param (
 		[string]$Search
 	)
 	
 	Import-Module ActiveDirectory -ErrorAction SilentlyContinue
-	$OUs = Get-ADOrganizationalUnit -Filter * | Where { $_.distinguishedname -like "*$Search*" } | Sort Name
-	$MenuItem = 0
-	cls
-	Write-Host "Select the OU you want and the LDAP value will be copied to the clipboard.`n"
-	ForEach ($OU in $OUs)
-	{	$MenuItem ++
-		$MenuText = ($OU | Select Name,DistinguishedName | Format-Table -HideTableHeaders | Out-String).Trim()
-		If ($MenuItem -lt 10)
-		{	[string]$Select = " $MenuItem"
-		}
-		Else
-		{	[string]$Select = $MenuItem
-		}
-		Write-Host "$Select. $MenuText"
-	}
-	$Prompt = Read-Host -Prompt "`n`nEnter number of the OU you want"
-	If (-not $Prompt)
-	{	Break
-	}
-	Try 
-	{	$Prompt = [int]$Prompt
-	}
-	Catch
-	{	Write-Host "`nSorry, invalid entry.  Try again!"
-		Break
-	}
-	If ($Prompt -lt 1 -or $Prompt -gt $MenuItem)
-	{	Write-Host "`nSorry, invalid entry.  Try again!"
-	}
-	Else
-	{	Write-Host "`n`n$($OUs[$Prompt - 1].distinguishedName) copied to clipboard"
+    Try {
+        $OUs = @(Get-ADOrganizationalUnit -Filter * -ErrorAction Stop | Where { $_.distinguishedname -like "*$Search*" })
+    }
+    Catch {
+        Throw "Get-ADOrganizationalUnit failed because ""$($Error[0])"""
+    }
+    If ($OUs.Count -eq 0)
+    {
+        Write-Warning "No OU's found"
+    }
+    ElseIf ($OUs.Count -eq 1)
+    {
+        $Result = $OUs | Select Name,distinguishedName
+    }
+    Else
+    {
+	    $Result = $OUs | Sort Name | Select Name,distinguishedName | Out-GridView -Title "Select Organization Unit" -PassThru
+    }
+    If ($Result)
+    {
+    	Write-Verbose "$($Result.distinguishedName) copied to clipboard" -Verbose
 		[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-        [Windows.Forms.Clipboard]::SetDataObject($OUs[$Prompt - 1].distinguishedName, $true)
+        [Windows.Forms.Clipboard]::SetDataObject($Result.distinguishedName, $true)
 	}
 }
