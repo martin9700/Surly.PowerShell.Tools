@@ -26,7 +26,7 @@ Describe "Testing Test-ADAuthentication Success" {
         }
     }
     Context "Test User not found" {
-        It "Test successfully finding a user" {
+        It "Test NOT finding a user" {
             { Test-ADAuthentication -User $FakeCredential } | Should Throw
         }
     }
