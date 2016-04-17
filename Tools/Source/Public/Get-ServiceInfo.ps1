@@ -61,16 +61,20 @@
             1.0             Initial Release
             2.0             Complete rewrite.  Supports pipeline as text as well as object, converted to PS3.0 with Get-CimInstance, 
                             output objects in stream, added display name search.  
+            2.1             Changed to use Get-CimInstance.  Added position parameter decorations for more intuitive use.  Why no try/catch?  
+                            The built in messsage from Get-CimInstance is pretty good, and I couldn't see a way to improve on it.  Ain't broke!
 	.LINK
 		http://www.thesurlyadmin.com/2012/09/06/get-service-information-for-a-list-of-computers
     .LINK
 		http://community.spiceworks.com/scripts/show/1639-get-serviceinformation-extended
 	#>
     #requires -version 3.0
+    [CmdletBinding()]
 	Param(
-        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName,Position=1)]
         [Alias("ComputerName")]
 		[string[]]$Name = $env:computername,
+        [Parameter(Position=0)]
         [string[]]$Filter = "*"
 		)
 	Begin
@@ -91,7 +95,8 @@
                 {
                     $CimParams.Add("Filter","DisplayName like '$($Service.Replace('*','%'))'")
                 }
-                Get-WmiObject @CimParams | Select @{Name="ComputerName";Expression={$Computer}},DisplayName,Name,StartMode,@{Name="ServiceLogon";Expression={$_.StartName}},State
+
+                Get-CimInstance @CimParams | Select @{Name="ComputerName";Expression={$Computer}},DisplayName,Name,StartMode,@{Name="ServiceLogon";Expression={$_.StartName}},State
             }
         }
     }
@@ -101,5 +106,4 @@
 	}
 }
 
-
-Get-ServiceInfo -filter *store*,netlog*
+#Get-ServiceInfo -filter *spool* -Name "blahblah"
