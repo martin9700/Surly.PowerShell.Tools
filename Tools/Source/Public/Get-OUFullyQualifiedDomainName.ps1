@@ -67,6 +67,12 @@
     {
     	Write-Verbose "$($Result.distinguishedName) copied to clipboard" -Verbose
 		[Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
-        [Windows.Forms.Clipboard]::SetDataObject($Result.distinguishedName, $true)
+        #Thanks to CosmosKey (wherever you are!) at Superuser.com for this solution
+        $TextBox = New-Object System.Windows.Forms.TextBox
+        $TextBox.Multiline = $true
+        $TextBox.Text = $Result.distinguishedName
+        $TextBox.SelectAll()
+        $TextBox.Copy()
+        $TextBox.Dispose()
 	}
 }
