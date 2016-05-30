@@ -56,72 +56,67 @@
         $ThenGroups = @{}
     }
 
-        $NowGroups = @{}
-        Write-Verbose "Getting group memberships for $($Name -join ', ')..."
-        [PSCustomObject[]]$Changes = ForEach ($Group in $Name)
-        {
-            Try {
-                $NowGroups.Add($Group,(Get-ADGroup $Group -Properties Member | Select -ExpandProperty Member))
-            }
-            Catch {
-                Write-Warning "Unable to locate group: $Group"
-                If ($ThenGroups.Keys -contains $Group)
-                {
-                    [PSCustomObject]@{
-                        Change = "Group deleted"
-                        Group = $Group
-                        UserName = ""
-                        Sort = 0
-                    }
-                }
-                Continue
-            }
+    $NowGroups = @{}
+    Write-Verbose "Getting group memberships for $($Name -join ', ')..."
+    [PSCustomObject[]]$Changes = ForEach ($Group in $Name)
+    {
+        Try {
+            $NowGroups.Add($Group,(Get-ADGroup $Group -Properties Member | Select -ExpandProperty Member))
+        }
+        Catch {
+            Write-Warning "Unable to locate group: $Group"
             If ($ThenGroups.Keys -contains $Group)
             {
-                ForEach ($Change in (Compare-Object -ReferenceObject $ThenGroups[$Group] -DifferenceObject $NowGroups[$Group]))
-                {   
-                    If ($Change.SideIndicator -eq "=>")
-                    {   $Status = "Added"
-                    }
-                    Else
-                    {   $Status = "Removed"
-                    }
-                    [PSCustomObject]@{
-                        Change = $Status
-                        Group = $Group
-                        UserName = Get-ADUser $Change.InputObject | Select -ExpandProperty SamAccountName
-                        Sort = 1
-                    }
-                }
-            }
-            Else
-            {
                 [PSCustomObject]@{
-                    Change = "Group added to watch"
+                    Change = "Group deleted"
                     Group = $Group
                     UserName = ""
                     Sort = 0
                 }
             }
+            Continue
         }
-
-        [PSCustomObject[]]$Changes += ForEach ($Group in $ThenGroups.Keys)
+        If ($ThenGroups.Keys -contains $Group)
         {
-            If ($Name -notcontains $Group)
-            {
+            ForEach ($Change in (Compare-Object -ReferenceObject $ThenGroups[$Group] -DifferenceObject $NowGroups[$Group]))
+            {   
+                If ($Change.SideIndicator -eq "=>")
+                {   $Status = "Added"
+                }
+                Else
+                {   $Status = "Removed"
+                }
                 [PSCustomObject]@{
-                    Change = "Group removed from watch"
+                    Change = $Status
                     Group = $Group
-                    UserName = ""
-                    Sort = 0
+                    UserName = Get-ADUser $Change.InputObject | Select -ExpandProperty SamAccountName
+                    Sort = 1
                 }
             }
         }
-<#    }
-    Else
+        Else
+        {
+            [PSCustomObject]@{
+                Change = "Group added to watch"
+                Group = $Group
+                UserName = ""
+                Sort = 0
+            }
+        }
+    }
+
+    [PSCustomObject[]]$Changes += ForEach ($Group in $ThenGroups.Keys)
     {
-        Write-Verbose "No group state found so nothing to compare.  Group state for ""$($Name -join ', ')"" has been saved at ""$GroupStatePath"" for next run" -Verbose
-    }#>
+        If ($Name -notcontains $Group)
+        {
+            [PSCustomObject]@{
+                Change = "Group removed from watch"
+                Group = $Group
+                UserName = ""
+                Sort = 0
+            }
+        }
+    }
 
     $NowGroups | Export-Clixml $GroupStatePath
     If (-not $Changes)
