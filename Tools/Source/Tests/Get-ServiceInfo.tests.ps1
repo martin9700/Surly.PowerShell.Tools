@@ -1,4 +1,5 @@
 ﻿. $PSScriptRoot\..\Public\Get-ServiceInfo.ps1
+. $PSScriptRoot\..\Public\Get-WQLQuery.ps1
 
 Describe "Testing Get-ServiceInfo" {
     Context "Getting general service information" {
