@@ -20,7 +20,7 @@ Describe "Testing Get-AdapterInfo" {
         }
 
         It "Bad computer name (should see warning above)" {
-            Get-AdapterInfo -Name NoComputerHere | Should BeNullorEmpty
+            Get-AdapterInfo -Name NoComputerHere -ErrorAction SilentlyContinue | Should BeNullorEmpty
         }
     }
 
@@ -40,7 +40,7 @@ Describe "Testing Get-AdapterInfo" {
         }
 
         It "Bad computer name in pipeline (should see warning above)" {
-            "NoComputerHere" | Get-AdapterInfo | Should BeNullorEmpty
+            "NoComputerHere" | Get-AdapterInfo -ErrorAction SilentlyContinue | Should BeNullorEmpty
         }
     }
 }

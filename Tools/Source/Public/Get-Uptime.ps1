@@ -78,4 +78,3 @@ Function Get-Uptime {
     }
 }
 
-Get-Uptime
