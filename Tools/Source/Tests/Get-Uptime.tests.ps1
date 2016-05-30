@@ -1,4 +1,5 @@
 ﻿. $PSScriptRoot\..\Public\Get-Uptime.ps1
+. $PSScriptRoot\..\Public\Get-WQLQuery.ps1
 
 Describe "Testing Get-Uptime" {
     Context "Test retrieve uptime information " {
