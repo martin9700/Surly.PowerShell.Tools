@@ -41,7 +41,7 @@ Function Get-Uptime {
             4/17/16         MLP - Changed to using Get-CimInstance, changed to PSCustomObject and updated LastBootUpTime which is now a 
                                   date/time object instead of FileTime
     .LINK
-        https://github.com/martin9700/PS.Surly.Tools
+        https://github.com/martin9700/Surly.PowerShell.Tools
     #>
     [CmdletBinding()]
     Param (
@@ -53,17 +53,29 @@ Function Get-Uptime {
         ForEach ($Computer in $Name)
         {   Write-Verbose "Checking Host: $Computer"
             Try {
-                $LastBoot = Get-CimInstance -ComputerName $Computer -Query "SELECT LastBootUpTime FROM Win32_OperatingSystem" -ErrorAction Stop | Select -ExpandProperty LastBootUpTime
+                #LastBootUpTime
+                $LastBoot = Get-WQLQuery -ComputerName $Computer -Query "SELECT LastBootUpTime FROM Win32_OperatingSystem" -ErrorAction Stop
             }
             Catch {
-                Write-Warning "Unable to get LastBootTime from $Computer because ""$($Error[0])"""
+                Write-Error "Unable to get LastBootTime from $Computer because ""$($_)"""
                 Continue
             }
+            If ($LastBoot.WMIProtocol -eq "WSMAN") 
+            { 
+                $LBT = $LastBoot.LastBootUpTime 
+            } 
+            Else 
+            { 
+                $LBT = $Lastboot.ConvertToDateTime($LastBoot.LastBootUpTime)
+            }
+            
             [PSCustomObject]@{
                 Name = $Computer
-                LastBootTime = $LastBoot
-                RebootSince = New-TimeSpan -Start $LastBoot -End (Get-Date)
+                LastBootTime = $LBT
+                RebootSince = New-TimeSpan -Start $LBT -End (Get-Date)
             }
         }
     }
 }
+
+Get-Uptime

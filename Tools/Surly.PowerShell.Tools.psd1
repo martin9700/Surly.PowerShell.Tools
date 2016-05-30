@@ -68,8 +68,9 @@ FormatsToProcess = @()
 # Functions to export from this module
 FunctionsToExport = 'Compare-ADGroupMember', 'Get-AdapterInfo', 'Get-ComputerInfo', 
                'Get-DiskInfo', 'Get-OUFullyQualifiedDomainName', 'Get-ServiceInfo', 
-               'Get-Uptime', 'Get-VMScreenShot', 'Get-WhatIsMyIP', 
-               'New-RandomPassword', 'Test-ADAuthentication', 'Write-Log'
+               'Get-Uptime', 'Get-VMScreenShot', 'Get-WhatIsMyIP', 'Get-WQLQuery', 
+               'New-RandomPassword', 'Restart-ComputerAndWait', 
+               'Test-ADAuthentication', 'Write-Log'
 
 # Cmdlets to export from this module
 CmdletsToExport = 

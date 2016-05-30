@@ -94,7 +94,8 @@ Function Get-WQLQuery
                 $WMI | Add-Member -MemberType NoteProperty -Name WMIProtocol -Value $CimSession.Protocol
             }
             Catch {
-                Write-Error "Unable to execute Query because ""$($_)""" -ErrorAction Stop
+                Write-Error "Unable to execute Query because ""$($_)"""
+                Continue
             }
             Return $WMI
         }
