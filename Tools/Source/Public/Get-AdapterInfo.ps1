@@ -47,6 +47,7 @@
        
         Changelog:
             1.0             Initial Release
+            1.1             Updated to use Get-WQLQuery
     .LINK
     
     #>
@@ -71,15 +72,16 @@
         ForEach ($Computer in $Name)
         {   Write-Verbose "$(Get-Date): Working on $Computer..."
             Try {
-                $Adapters = Get-CimInstance Win32_NetworkAdapter -Filter "NetEnabled = True" -ComputerName $Computer -ErrorAction Stop
+                $Adapters = Get-WQLQuery -Query "Select * From Win32_NetworkAdapter Where NetEnabled = True" -ComputerName $Computer -ErrorAction Stop
             }
             Catch {
-                Write-Warning "$(Get-Date): Unable to connect to $Computer because: $($Error[0])"
+                Write-Error "$(Get-Date): Error getting adapter information because ""$_"""
                 Continue
             }
         
             ForEach ($Adapter in $Adapters)
-            {   $Config = Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "Index = $($Adapter.Index)" -ComputerName $Computer
+            {   
+                $Config = Get-WQLQuery -Query "Select * From Win32_NetworkAdapterConfiguration Where Index = $($Adapter.Index)" -ComputerName $Computer
                 ForEach ($IPAddr in $Config.IPAddress)
                 {   If ($IPv4Only -and $IPAddr -like "*:*")
                     {   Continue

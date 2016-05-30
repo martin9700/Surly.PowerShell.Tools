@@ -1,4 +1,5 @@
 ﻿. $PSScriptRoot\..\Public\Get-AdapterInfo.ps1
+. $PSScriptRoot\..\Public\Get-WQLQuery.ps1
 
 
 

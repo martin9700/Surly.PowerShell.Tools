@@ -105,15 +105,3 @@ Function Get-WQLQuery
         Write-Verbose "$(Get-Date): Get-WQLQuery completed"
     }
 }
-
-cls
-$Q = "Select * from Win32_bios where currentlanguage = 'en-us'"
-
-
-    $R = Get-WQLQuery -Query $Q -Verbose
-    $R | Fl *
-
-
-
-
-
