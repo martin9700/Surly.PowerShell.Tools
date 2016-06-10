@@ -62,6 +62,11 @@
             )
 
             Begin {
+                $FilterHash = @{
+                    ID = 6005
+                    StartTime = Get-Date
+                    LogName = "System"
+                }
                 $MaxRetries = $Timeout * 3
                 Start-Sleep -Seconds 20
             }
@@ -73,26 +78,28 @@
                     Do {
                         If ($Retries -gt $MaxRetries)
                         {
-                            Write-Error "$Computer has failed to reboot for 10 minutes, aborting script" -ErrorAction Stop
+                            Write-Error "$Computer has failed to reboot for $Timeout minutes, aborting script" -ErrorAction Stop
                         }
 
-                        Try {
+                        $UpYet = Get-WinEvent -ComputerName $Computer -FilterHashtable $FilterHash -ErrorAction SilentlyContinue
+                        If ($UpYet)
+                        {
                             $CurrentBoot = Get-Uptime -Name $Computer -ErrorAction Stop
+                            If ($CurrentBoot.RebootSince.TotalSeconds -ge 60 -and $CurrentBoot.RebootSince.TotalSeconds -lt 600)
+                            {
+                                Write-Verbose "$Computer successfully rebooted" -Verbose
+                                $Computers[$Computer].ThisReboot = $CurrentBoot.LastBootTime
+                                Break
+                            }
+                            Write-Verbose "Waiting 20 seconds for $Computer" -Verbose
+                            Start-Sleep -Seconds 20
                         }
-                        Catch {
+                        Else
+                        {
                             $Retries ++
                             Start-Sleep -Seconds 20
                             Continue
                         }
-
-                        If ($CurrentBoot.RebootSince.TotalSeconds -ge 60 -and $CurrentBoot.RebootSince.TotalSeconds -lt 600)
-                        {
-                            Write-Verbose "$Computer successfully rebooted" -Verbose
-                            $Computers[$Computer].ThisReboot = $CurrentBoot.LastBootTime
-                            Break
-                        }
-                        Write-Verbose "Waiting 20 seconds for $Computer" -Verbose
-                        Start-Sleep -Seconds 20
                     } While ($true)
                 }
             }
@@ -136,13 +143,13 @@
 
             If ($Wait)
             {
-                $Computer | Wait-Reboot
+                $Computer | Wait-Reboot -ErrorAction Stop
             }
         }
 
         If (-not $Wait)
         {
-            $Keys | Wait-Reboot
+            $Keys | Wait-Reboot -ErrorAction Stop
         }
 
         Return $Computers.Values

@@ -83,7 +83,7 @@
                 $Disks = Get-DiskInfo -ComputerName $Computer
                 ForEach ($Disk in $Disks)
                 {
-                    $Result | Add-Member -MemberType NoteProperty -Name $Disk.Drive -Value ("{0}GB of {1}GB ({2:N2}GB, {3} Free)" -f $Disk.UsedGB,$Disk.CapacityGB,($Disk.CapacityGB - $Disk.UsedGB),$Disk.FreePercent.Replace(" ",""))
+                    $Result | Add-Member -MemberType NoteProperty -Name $Disk.Drive -Value ("$($Disk.UsedGB)GB of $($Disk.CapacityGB)GB ({0:N2}GB, $($Disk.FreePercent.Replace(' ',''))) Free) ($($Disk.Disk.Replace('\\.\','')) $($Disk.VolumeName))" -f ($Disk.CapacityGB - $Disk.UsedGB))
                 }
 
                 Write-Output $Result
@@ -92,4 +92,4 @@
     }
 }
 
-get-adcomputer -filter {enabled -eq $true} | Select -first 3 | get-computerinfo
+get-computerinfo -Name corpbatch101
