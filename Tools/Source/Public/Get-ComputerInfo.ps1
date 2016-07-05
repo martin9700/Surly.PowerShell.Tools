@@ -83,7 +83,7 @@
                 $Disks = Get-DiskInfo -ComputerName $Computer
                 ForEach ($Disk in $Disks)
                 {
-                    $Result | Add-Member -MemberType NoteProperty -Name $Disk.Drive -Value ("$($Disk.UsedGB)GB of $($Disk.CapacityGB)GB ({0:N2}GB, $($Disk.FreePercent.Replace(' ',''))) Free) ($($Disk.Disk.Replace('\\.\','')) $($Disk.VolumeName))" -f ($Disk.CapacityGB - $Disk.UsedGB))
+                    $Result | Add-Member -MemberType NoteProperty -Name $Disk.Drive -Value ("$($Disk.UsedGB)GB of $($Disk.CapacityGB)GB ({0:N2}GB, $($Disk.FreePercent.Replace(' ','')) Free) ($($Disk.Disk.Replace('\\.\','')) $($Disk.VolumeName))" -f ($Disk.CapacityGB - $Disk.UsedGB))
                 }
 
                 Write-Output $Result
