@@ -60,21 +60,12 @@ Function Get-Uptime {
                 Write-Error "Unable to get LastBootTime from $Computer because ""$($_)"""
                 Continue
             }
-            If ($LastBoot.WMIProtocol -eq "WSMAN") 
-            { 
-                $LBT = $LastBoot.LastBootUpTime 
-            } 
-            Else 
-            { 
-                $LBT = $Lastboot.ConvertToDateTime($LastBoot.LastBootUpTime)
-            }
             
             [PSCustomObject]@{
                 Name = $Computer
-                LastBootTime = $LBT
-                RebootSince = New-TimeSpan -Start $LBT -End (Get-Date)
+                LastBootTime = $Lastboot.LastBootUpTime
+                RebootSince = New-TimeSpan -Start $Lastboot.LastBootUpTime -End (Get-Date)
             }
         }
     }
 }
-

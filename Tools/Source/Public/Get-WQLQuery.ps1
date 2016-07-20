@@ -78,15 +78,17 @@ Function Get-WQLQuery
                 $SessionParams.SessionOption = New-CimSessionOption -Protocol $Protocol
                 Try {
                     $CimSession = New-CimSession @SessionParams -ErrorAction Stop
+                    $ErrMsg = $null
                     Break
                 }
                 Catch {
-                    $Protocol = $_
+                    $ErrMsg = $_
                 }
             }
-            If ($Protocol -notmatch "WSMAN|DCOM")
+            If ($ErrMsg)
             {
-                Write-Error "Unable to connect to $ComputerName because ""$Protocol""" -ErrorAction Stop
+                Write-Error "Unable to connect to $ComputerName because ""$ErrMsg"""
+                Continue
             }
 
             Try {
