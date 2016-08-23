@@ -157,6 +157,3 @@
         Write-Verbose "$(Get-Date): Restart-ComputerAndWait completed"
     }
 }
-
-"dbtest101b","dbtest401c" | Restart-ComputerAndWait
-#Restart-ComputerAndWait -Name blahblah -ErrorAction Stop
