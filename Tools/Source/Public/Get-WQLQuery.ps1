@@ -33,6 +33,8 @@ Function Get-WQLQuery
             1.0             Initial Release
             2.0             Rewrite for publish to Surly.PowerShell.Tools.  Removed "retries", simplified protocol
                             failover.  Added comment based help.  Added pipeline for computername
+            2.1             Add Remove-CimSession for better cleanup, changed a Return to Write-Output to support multiple
+                            servers
     .LINK
         https://github.com/martin9700/Surly.PowerShell.Tools
     #>
@@ -99,7 +101,8 @@ Function Get-WQLQuery
                 Write-Error "Unable to execute Query because ""$($_)"""
                 Continue
             }
-            Return $WMI
+            Write-Output $WMI
+            Remove-CimSession -CimSession $CimSession
         }
     }
 
