@@ -64,6 +64,7 @@
             2.0         Full rewrite: added pipeline from Get-ADcomputer, using Get-WQLQuery function, all new
                         WQL queries to get physical disk, partition and drive information, using Show-HDSize
                         private function for human readable output, using [PSCustomObject] output
+            2.1         Size outputs are all strings, so changed them to numbers
     .LINK
         http://community.spiceworks.com/scripts/show/2147-get-diskinfo
     #>
@@ -97,16 +98,16 @@
                             PartitionRawSize = $Partition.Size | Show-HDSize
                             Drive = $Drive.DeviceID
                             VolumeName = $Drive.VolumeName
-                            CapacityGB = "{0:N2}" -f ($Drive.Size / 1gb)
-                            CapacityMB = "{0:N2}" -f ($Drive.Size / 1mb)
+                            CapacityGB = [math]::Round(($Drive.Size / 1gb),2)
+                            CapacityMB = [math]::Round(($Drive.Size / 1mb),2)
                             CapacityRaw = $Drive.Size
-                            UsedGB = "{0:N2}" -f (($Drive.Size - $Drive.FreeSpace) / 1gb)
-                            UsedMB = "{0:N2}" -f (($Drive.Size - $Drive.FreeSpace) / 1mb)
-                            UsedPercent = "{0:P0}" -f (($Drive.Size - $Drive.FreeSpace) / $Drive.Size)
+                            UsedGB = [math]::Round((($Drive.Size - $Drive.FreeSpace) / 1gb),2)
+                            UsedMB = [math]::Round((($Drive.Size - $Drive.FreeSpace) / 1mb),2)
+                            UsedPercent = "{0:N0}%" -f ((($Drive.Size - $Drive.FreeSpace) / $Drive.Size) * 100)
                             UsedRaw = ($Drive.Size - $Drive.FreeSpace)
-                            FreeGB = "{0:N2}" -f ($Drive.FreeSpace / 1gb)
-                            FreeMB = "{0:N2}" -f ($Drive.FreeSpace / 1mb)
-                            FreePercent = "{0:P0}" -f ($Drive.FreeSpace / $Drive.Size)
+                            FreeGB = [math]::Round(($Drive.FreeSpace / 1gb),2)
+                            FreeMB = [math]::Round(($Drive.FreeSpace / 1mb),2)
+                            FreePercent = "{0:N0}%" -f (($Drive.FreeSpace / $Drive.Size) * 100)
                             FreeRaw = $Drive.FreeSpace
                         }
                     }
@@ -124,5 +125,3 @@
         Return $DiskResults
     }
 }
-
-#Get-DiskInfo -ComputerName corpbatch101 | fl *
